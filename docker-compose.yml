@@ -1,0 +1,14 @@
+version: '3'
+services:
+  app:
+    container_name: weather_microservice
+    build: .
+    ports:
+      - ${HTTP_PORT}:8080
+    environment:
+      - HTTP_PORT=${HTTP_PORT}
+      - OPEN_WEATHER_API_KEY=${OPEN_WEATHER_API_KEY}
+      - OPEN_WEATHER_API_BASE_URL=${OPEN_WEATHER_API_BASE_URL}
+    restart: on-failure
+    volumes:
+      - .:/go/src/app
