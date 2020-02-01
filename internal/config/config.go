@@ -39,7 +39,7 @@ func (c *Config) HttpServerPort() int {
 func (c *Config) Cache() *gc.Cache {
 	if c.cache == nil {
 		c.cache = gc.New(
-			time.Duration(c.config.CacheExpiration)*time.Hour,
+			time.Duration(c.config.CacheExpiration)*time.Minute,
 			time.Duration(c.config.CacheInterval)*time.Minute)
 	}
 	return c.cache

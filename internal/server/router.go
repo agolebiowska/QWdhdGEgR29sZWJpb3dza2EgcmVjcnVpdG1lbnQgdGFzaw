@@ -1,10 +1,11 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/api"
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 func NewRouter(conf *config.Config) http.Handler {

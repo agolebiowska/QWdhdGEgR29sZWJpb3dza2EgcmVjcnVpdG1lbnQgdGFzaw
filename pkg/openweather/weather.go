@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
+	"github.com/patrickmn/go-cache"
 )
 
 // OpenWeather API docs: https://openweathermap.org/current
@@ -73,16 +74,22 @@ func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, names []str
 		return nil, errs.ErrBadRequest
 	}
 
-	// @todo: use goroutine?
 	var weathers []CurrentWeather
 	for _, n := range names {
-		currentWeather := new(CurrentWeather)
-		err := s.client.Do(ctx, fmt.Sprintf("weather?q=%s", n), currentWeather)
-		if err != nil {
-			return nil, err
+		weather := new(CurrentWeather)
+
+		w, found := s.client.Cache.Get(n)
+		if !found {
+			err := s.client.Do(ctx, fmt.Sprintf("weather?q=%s", n), weather)
+			if err != nil {
+				return nil, err
+			}
+
+			s.client.Cache.Set(n, weather, cache.DefaultExpiration)
 		}
 
-		weathers = append(weathers, *currentWeather)
+		weather = w.(*CurrentWeather)
+		weathers = append(weathers, *weather)
 	}
 
 	return &CurrentWeatherListResponse{weathers, len(weathers)}, nil

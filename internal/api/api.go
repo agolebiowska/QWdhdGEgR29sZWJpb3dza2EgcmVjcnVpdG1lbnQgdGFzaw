@@ -14,7 +14,7 @@ import (
 func CurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		v := r.URL.Query()
-		names := strings.Split(v.Get("q"), ",")
+		names := strings.Split(strings.ToLower(v.Get("q")), ",")
 
 		c := openweather.NewClient(conf)
 

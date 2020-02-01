@@ -10,12 +10,14 @@ import (
 
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
+	"github.com/patrickmn/go-cache"
 )
 
 type Client struct {
 	http    *http.Client
 	BaseURL *url.URL
 	Token   string
+	Cache   *cache.Cache
 
 	Weather *WeatherService
 }
@@ -30,6 +32,7 @@ func NewClient(conf *config.Config) *Client {
 		http:    &http.Client{},
 		BaseURL: baseURL,
 		Token:   conf.OpenWeatherApiKey(),
+		Cache:   conf.Cache(),
 	}
 
 	c.Weather = &WeatherService{c}

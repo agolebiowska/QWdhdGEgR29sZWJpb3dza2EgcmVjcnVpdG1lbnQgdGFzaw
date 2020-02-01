@@ -1,6 +1,6 @@
 DOCKER_COMPOSE_FILE		:= "docker-compose.yml"
-DOCKERFILE_FILE         := "Dockerfile"
-DOCKERFILEDEV_FILE      := "Dockerfile.dev"
+DOCKERFILE_FILE			:= "Dockerfile"
+DOCKERFILEDEV_FILE		:= "Dockerfile.dev"
 
 # Builds & run a production-ready image
 .PHONY: prod
