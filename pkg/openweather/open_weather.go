@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
+	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 type Client struct {
@@ -23,12 +23,12 @@ type service struct {
 	client *Client
 }
 
-func NewClient(token string, baseUrl string) *Client {
-	baseURL, _ := url.Parse(baseUrl)
+func NewClient(conf *config.Config) *Client {
+	baseURL, _ := url.Parse(conf.OpenWeatherApiBaseUrl())
 	c := &Client{
-		http: &http.Client{},
+		http:    &http.Client{},
 		BaseURL: baseURL,
-		Token: token,
+		Token:   conf.OpenWeatherApiKey(),
 	}
 
 	c.Weather = &WeatherService{c}
@@ -44,13 +44,16 @@ func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) erro
 
 	response, err := c.http.Get(u.String())
 	if err != nil {
-		fmt.Print(err.Error())
-		os.Exit(1)
+		return errs.ErrInvalidRequest
+	}
+
+	if err := errs.FindError(response); err != nil {
+		return err
 	}
 
 	res, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return errs.ErrInvalidResponse
 	}
 
 	err = json.Unmarshal(res, &result)

@@ -19,7 +19,6 @@ func (e HTTPError) Error() string {
 }
 
 var (
-	ErrInvalidJSON     = errors.New("Invalid JSON.")
 	ErrInvalidResponse = errors.New("Cannot read response body.")
 	ErrInvalidRequest  = errors.New("Cannot send request.")
 )
@@ -31,7 +30,7 @@ var (
 	}
 	ErrNotFound = HTTPError{
 		Code: http.StatusNotFound,
-		Msg:  "Nof found.",
+		Msg:  "Not found.",
 	}
 	ErrUnauthorized = HTTPError{
 		Code: http.StatusUnauthorized,
@@ -52,14 +51,16 @@ func WriteError(w http.ResponseWriter, err error) {
 		err = errors.Errorf("No error specified.")
 	}
 
+	log.Print(err.Error())
 	httpError, ok := err.(HTTPError)
 	if ok {
-		b, _ := json.Marshal(httpError)
-		http.Error(w, string(b), httpError.Code)
+		w.WriteHeader(httpError.Code)
+		_ = json.NewEncoder(w).Encode(httpError)
 		return
 	}
 
-	http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+	w.WriteHeader(http.StatusInternalServerError)
+	_ = json.NewEncoder(w).Encode("Something went wrong.")
 }
 
 func FindError(resp *http.Response) error {

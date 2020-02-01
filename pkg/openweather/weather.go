@@ -3,6 +3,7 @@ package openweather
 import (
 	"context"
 	"fmt"
+	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
 )
 
 // OpenWeather API docs: https://openweathermap.org/current
@@ -67,8 +68,8 @@ type Sys struct {
 }
 
 func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, names []string) (*CurrentWeatherListResponse, error) {
-	if len(names) <= 0 {
-		return &CurrentWeatherListResponse{[]CurrentWeather{}, 0}, nil
+	if len(names) <= 0 || names[0] == "" {
+		return nil, errs.ErrBadRequest
 	}
 
 	// @todo: use goroutine?

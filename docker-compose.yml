@@ -9,6 +9,8 @@ services:
       - HTTP_PORT=${HTTP_PORT}
       - OPEN_WEATHER_API_KEY=${OPEN_WEATHER_API_KEY}
       - OPEN_WEATHER_API_BASE_URL=${OPEN_WEATHER_API_BASE_URL}
+      - CACHE_EXPIRATION=${CACHE_EXPIRATION}
+      - CACHE_INTERVAL=${CACHE_INTERVAL}
     restart: on-failure
     volumes:
       - .:/go/src/app
