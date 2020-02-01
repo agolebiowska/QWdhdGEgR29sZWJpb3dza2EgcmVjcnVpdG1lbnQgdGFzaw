@@ -3,6 +3,7 @@ package openweather
 import (
 	"context"
 	"fmt"
+
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
 )
 

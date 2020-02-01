@@ -42,7 +42,7 @@ var (
 	}
 	ErrInternalError = HTTPError{
 		Code: http.StatusInternalServerError,
-		Msg:  "Internal error: report bug.",
+		Msg:  "Something went wrong.",
 	}
 )
 
@@ -54,13 +54,14 @@ func WriteError(w http.ResponseWriter, err error) {
 	log.Print(err.Error())
 	httpError, ok := err.(HTTPError)
 	if ok {
+		err = httpError
 		w.WriteHeader(httpError.Code)
 		_ = json.NewEncoder(w).Encode(httpError)
 		return
 	}
 
 	w.WriteHeader(http.StatusInternalServerError)
-	_ = json.NewEncoder(w).Encode("Something went wrong.")
+	_ = json.NewEncoder(w).Encode(ErrInternalError)
 }
 
 func FindError(resp *http.Response) error {

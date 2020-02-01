@@ -18,11 +18,11 @@ func Run() {
 
 	if err := server.ListenAndServe(); err != nil {
 		if err == http.ErrServerClosed {
-			log.Print("web server shutdown complete")
+			log.Print("Web server shutdown complete.")
 		} else {
-			log.Fatal(fmt.Printf("web server closed unexpect: %s", err))
+			log.Fatal(fmt.Printf("The web server shut down unexpectedly: %s", err))
 		}
 	}
 
-	log.Print(fmt.Printf("listening on port: %d", conf.HttpServerPort()))
+	log.Print(fmt.Printf("Listening on port: %d", conf.HttpServerPort()))
 }

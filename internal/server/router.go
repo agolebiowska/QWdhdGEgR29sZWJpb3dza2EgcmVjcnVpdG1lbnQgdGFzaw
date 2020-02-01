@@ -9,9 +9,9 @@ import (
 
 func NewRouter(conf *config.Config) http.Handler {
 	r := mux.NewRouter()
-	a := r.PathPrefix("/api/v1").Subrouter()
+	v1 := r.PathPrefix("/api/v1").Subrouter()
 
-	a.HandleFunc("/weather/current", api.CurrentWeatherByCityNames(conf)).Methods("GET")
+	v1.HandleFunc("/weather/current", api.CurrentWeather(conf)).Methods("GET")
 
 	return r
 }

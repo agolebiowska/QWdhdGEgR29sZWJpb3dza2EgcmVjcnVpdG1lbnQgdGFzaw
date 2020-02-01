@@ -11,7 +11,7 @@ import (
 )
 
 // GET /api/v1/weather/current?q=warsaw,london
-func CurrentWeatherByCityNames(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
+func CurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		v := r.URL.Query()
 		names := strings.Split(v.Get("q"), ",")
