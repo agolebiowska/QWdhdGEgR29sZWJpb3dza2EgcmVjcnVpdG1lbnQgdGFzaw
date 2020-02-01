@@ -3,6 +3,9 @@ package openweather
 import (
 	"context"
 	"fmt"
+	"net/url"
+	"strconv"
+	"strings"
 
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
 	"github.com/patrickmn/go-cache"
@@ -13,7 +16,14 @@ type WeatherService service
 
 type CurrentWeatherListResponse struct {
 	Items []CurrentWeather `json:"items"`
+	Page  int              `json:"page"`
 	Count int              `json:"count"`
+}
+
+type Filters struct {
+	Names []string
+	Page  int
+	Limit int
 }
 
 type CurrentWeather struct {
@@ -69,15 +79,37 @@ type Sys struct {
 	Sunset  *int     `json:"sunset,omitempty"`
 }
 
-func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, names []string) (*CurrentWeatherListResponse, error) {
-	if len(names) <= 0 || names[0] == "" {
+func (s *WeatherService) MakeFilters(v url.Values) Filters {
+	names := strings.Split(strings.ToLower(v.Get("q")), ",")
+
+	page, err := strconv.Atoi(v.Get("page"))
+	if err != nil || page <= 0 {
+		page = s.client.Page
+	}
+
+	limit, err := strconv.Atoi(v.Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = s.client.Limit
+	}
+
+	return Filters{names, page, limit}
+}
+
+func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, f Filters) (*CurrentWeatherListResponse, error) {
+	if len(f.Names) <= 0 || f.Names[0] == "" {
 		return nil, errs.ErrBadRequest
 	}
 
 	var weathers []CurrentWeather
-	for _, n := range names {
-		weather := new(CurrentWeather)
 
+	from, to := s.client.MakeRange(f.Limit, f.Page, len(f.Names))
+
+	for i, n := range f.Names[from:to] {
+		if i > f.Limit-1 {
+			break
+		}
+
+		weather := new(CurrentWeather)
 		w, found := s.client.Cache.Get(n)
 		if !found {
 			err := s.client.Do(ctx, fmt.Sprintf("weather?q=%s", n), weather)
@@ -92,5 +124,5 @@ func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, names []str
 		weathers = append(weathers, *weather)
 	}
 
-	return &CurrentWeatherListResponse{weathers, len(weathers)}, nil
+	return &CurrentWeatherListResponse{weathers, f.Page, len(weathers)}, nil
 }

@@ -13,11 +13,18 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
+const (
+	defaultLimit = 20
+	defaultPage  = 1
+)
+
 type Client struct {
 	http    *http.Client
 	BaseURL *url.URL
 	Token   string
 	Cache   *cache.Cache
+	Page    int
+	Limit   int
 
 	Weather *WeatherService
 }
@@ -33,6 +40,8 @@ func NewClient(conf *config.Config) *Client {
 		BaseURL: baseURL,
 		Token:   conf.OpenWeatherApiKey(),
 		Cache:   conf.Cache(),
+		Page:    defaultPage,
+		Limit:   defaultLimit,
 	}
 
 	c.Weather = &WeatherService{c}
@@ -66,4 +75,13 @@ func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) erro
 	}
 
 	return nil
+}
+
+func (c *Client) MakeRange(limit, page, len int) (from, to int) {
+	from = limit*page - limit
+	if from > len {
+		from = 0
+	}
+
+	return from, len
 }
