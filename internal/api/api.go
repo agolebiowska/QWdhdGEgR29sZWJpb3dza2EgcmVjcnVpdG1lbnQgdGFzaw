@@ -20,6 +20,12 @@ optional:
 */
 func GetCurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		ak := r.Header.Get("api-key")
+		if ak != conf.ApiKey() {
+			errs.WriteError(w, errs.ErrUnauthorized)
+			return
+		}
+
 		c := openweather.NewClient(conf)
 		f := c.Weather.MakeFilters(r.URL.Query())
 
@@ -33,6 +39,7 @@ func GetCurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.
 
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			errs.WriteError(w, err)
+			return
 		}
 	}
 }

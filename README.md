@@ -44,6 +44,9 @@ columbus?limit=5&page=2
 # Http port on which server will listen
 HTTP_PORT=8080
 
+# Api authentication key
+API_KEY=secret
+
 # Debugger port
 DEBUG_PORT=40000
 

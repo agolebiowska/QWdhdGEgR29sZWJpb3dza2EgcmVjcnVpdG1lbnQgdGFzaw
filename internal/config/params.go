@@ -8,6 +8,7 @@ import (
 
 type Params struct {
 	HttpServerPort        int    `env:"HTTP_PORT" envDefault:"8080"`
+	ApiKey                string `env:"API_KEY"`
 	OpenWeatherApiKey     string `env:"OPEN_WEATHER_API_KEY"`
 	OpenWeatherApiBaseUrl string `env:"OPEN_WEATHER_API_BASE_URL" envDefault:"https://api.openweathermap.org/data/2.5/"`
 	CacheExpiration       int    `env:"CACHE_EXPIRATION" envDefault:"30"`

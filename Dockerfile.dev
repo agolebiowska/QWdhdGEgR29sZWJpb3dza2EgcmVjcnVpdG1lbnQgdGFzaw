@@ -16,10 +16,12 @@ RUN go build -gcflags "all=-N -l" -o /server ./cmd/main.go
 RUN go get github.com/go-delve/delve/cmd/dlv
 
 ## Second stage
-FROM alpine
+# in Dockerfile.dev keep the golang:alpine img
+# to be able to run go test ./... in the container
+FROM golang:alpine
 
 # Allow delve to run on Alpine based containers.
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat build-base
 
 WORKDIR /
 COPY --from=builder /server /

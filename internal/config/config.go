@@ -35,6 +35,10 @@ func (c *Config) HttpServerPort() int {
 	return c.config.HttpServerPort
 }
 
+func (c *Config) ApiKey() string {
+	return c.config.ApiKey
+}
+
 // Cache returns the in-memory cache.
 func (c *Config) Cache() *gc.Cache {
 	if c.cache == nil {
