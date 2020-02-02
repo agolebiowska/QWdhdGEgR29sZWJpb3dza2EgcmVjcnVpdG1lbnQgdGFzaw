@@ -30,13 +30,11 @@ $ make dev
 ## Usage
 Example request
 ```shell
-$ curl http://localhost:8080/api/v1/weather/current?q=warsaw
+$ curl -i -H "api-key: secret" http://localhost:8080/api/v1/weather/current?q=warsaw
 ```
 With pagination
 ```shell
-$ curl http://localhost:8080/api/v1/weather/current?q=warsaw
-london,paris,praga,york,amsterdam,budapest,cracow,phoenix,
-columbus?limit=5&page=2
+$ curl -i -H "api-key: secret" http://localhost:8080/api/v1/weather/current?q=warsaw,london,paris,praga,york,amsterdam,budapest,cracow,phoenix,columbus?limit=5&page=2
 ```
 
 ## Available configuration
