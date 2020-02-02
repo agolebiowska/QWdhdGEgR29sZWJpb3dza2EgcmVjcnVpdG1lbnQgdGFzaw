@@ -1,11 +1,11 @@
 # Weather microservice
 [![Build Status](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw.svg?branch=master)](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw)
 
-| Resource                 | Query params                                    | Description                                                                    |
-|:-------------------------|:------------------------------------------------|:-------------------------------------------------------------------------------|
-| `api/v1/weather/current` | q, string, required=true, example=warsaw,london |returns a list of weather items for given city/country names separated by commas, optionally with pagination|
-|                          | page, int, required=false, default=1            |                                                                                |
-|                          | count, int, required=false, default=20          |                                                                                |
+| Resource                 | Query params| Description|
+|:-------------------------|:------------|:-----------|
+| `api/v1/weather/current` | **q**: string, required=true, example=warsaw,london; **page**: int, required=false, default=1; **count**: int, required=false, default=20 |returns a list of weather items for given city/country names separated by commas, optionally with pagination|
+                                                                                                                    
+                                                                                                             
 
 ## Setup
 
