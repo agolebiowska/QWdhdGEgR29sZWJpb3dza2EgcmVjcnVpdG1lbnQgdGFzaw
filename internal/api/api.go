@@ -18,14 +18,14 @@ optional:
 	limit, default=20
 	page, default=1
 */
-func CurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
+func GetCurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		c := openweather.NewClient(conf)
 		f := c.Weather.MakeFilters(r.URL.Query())
 
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-		res, err := c.Weather.ListCurrentByCityNames(r.Context(), f)
+		res, err := c.Weather.ListCurrentByNames(r.Context(), f)
 		if err != nil {
 			errs.WriteError(w, err)
 			return

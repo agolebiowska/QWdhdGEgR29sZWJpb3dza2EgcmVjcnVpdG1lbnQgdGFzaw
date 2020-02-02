@@ -36,6 +36,7 @@ type CurrentWeather struct {
 	Clouds     *Clouds   `json:"clouds,omitempty"`
 	Dt         *int64    `json:"dt,omitempty"`
 	Sys        *Sys      `json:"sys,omitempty"`
+	Timezone   *int      `json:"timezone,omitempty"`
 	ID         *int      `json:"id,omitempty"`
 	Name       *string   `json:"name,omitempty"`
 	Cod        *int      `json:"cod,omitempty"`
@@ -54,11 +55,12 @@ type Weather struct {
 }
 
 type Main struct {
-	Temp     *float32 `json:"temp,omitempty"`
-	Pressure *float32 `json:"pressure,omitempty"`
-	Humidity *float32 `json:"humidity,omitempty"`
-	TempMin  *float32 `json:"temp_min,omitempty"`
-	TempMax  *float32 `json:"temp_max,omitempty"`
+	Temp      *float32 `json:"temp,omitempty"`
+	FeelsLike *float32 `json:"feels_like,omitempty"`
+	TempMin   *float32 `json:"temp_min,omitempty"`
+	TempMax   *float32 `json:"temp_max,omitempty"`
+	Pressure  *float32 `json:"pressure,omitempty"`
+	Humidity  *float32 `json:"humidity,omitempty"`
 }
 
 type Wind struct {
@@ -71,15 +73,14 @@ type Clouds struct {
 }
 
 type Sys struct {
-	Type    *int     `json:"type,omitempty"`
-	ID      *int     `json:"id,omitempty"`
-	Message *float32 `json:"message,omitempty"`
-	Country *string  `json:"country,omitempty"`
-	Sunrise *int     `json:"sunrise,omitempty"`
-	Sunset  *int     `json:"sunset,omitempty"`
+	Type    *int    `json:"type,omitempty"`
+	ID      *int    `json:"id,omitempty"`
+	Country *string `json:"country,omitempty"`
+	Sunrise *int    `json:"sunrise,omitempty"`
+	Sunset  *int    `json:"sunset,omitempty"`
 }
 
-func (s *WeatherService) MakeFilters(v url.Values) Filters {
+func (s *WeatherService) MakeFilters(v url.Values) *Filters {
 	names := strings.Split(strings.ToLower(v.Get("q")), ",")
 
 	page, err := strconv.Atoi(v.Get("page"))
@@ -92,10 +93,10 @@ func (s *WeatherService) MakeFilters(v url.Values) Filters {
 		limit = s.client.Limit
 	}
 
-	return Filters{names, page, limit}
+	return &Filters{names, page, limit}
 }
 
-func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, f Filters) (*CurrentWeatherListResponse, error) {
+func (s *WeatherService) ListCurrentByNames(ctx context.Context, f *Filters) (*CurrentWeatherListResponse, error) {
 	if len(f.Names) <= 0 || f.Names[0] == "" {
 		return nil, errs.ErrBadRequest
 	}
@@ -118,9 +119,10 @@ func (s *WeatherService) ListCurrentByCityNames(ctx context.Context, f Filters) 
 			}
 
 			s.client.Cache.Set(n, weather, cache.DefaultExpiration)
+		} else {
+			weather = w.(*CurrentWeather)
 		}
 
-		weather = w.(*CurrentWeather)
 		weathers = append(weathers, *weather)
 	}
 
