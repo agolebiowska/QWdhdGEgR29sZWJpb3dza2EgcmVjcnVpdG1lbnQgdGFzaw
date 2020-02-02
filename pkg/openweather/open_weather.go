@@ -4,13 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
+	"github.com/patrickmn/go-cache"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-
-	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
-	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
-	"github.com/patrickmn/go-cache"
 )
 
 const (
@@ -49,27 +47,58 @@ func NewClient(conf *config.Config) *Client {
 	return c
 }
 
-func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) error {
+func (c *Client) NewRequest(urlStr string) (*http.Request, error) {
 	u, err := c.BaseURL.Parse(fmt.Sprintf("%s&appid=%s", urlStr, c.Token))
 	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) error {
+	req, err := c.NewRequest(urlStr)
+	if err != nil {
 		return err
 	}
 
-	response, err := c.http.Get(u.String())
-	if err != nil {
-		return errs.ErrInvalidRequest
+	if ctx != nil {
+		req = req.WithContext(ctx)
 	}
 
-	if err := errs.FindError(response); err != nil {
+	resp, err := c.http.Do(req)
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
+	if err != nil {
 		return err
 	}
 
-	res, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return errs.ErrInvalidResponse
+	var body []byte
+	done := make(chan struct{})
+	go func() {
+		body, err = ioutil.ReadAll(resp.Body)
+		close(done)
+	}()
+
+	select {
+	case <-ctx.Done():
+		<-done
+		err = resp.Body.Close()
+		if err == nil {
+			err = ctx.Err()
+		}
+	case <-done:
 	}
 
-	err = json.Unmarshal(res, &result)
+	err = json.Unmarshal(body, &result)
 	if err != nil {
 		return err
 	}

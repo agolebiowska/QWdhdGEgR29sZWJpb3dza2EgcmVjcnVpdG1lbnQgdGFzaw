@@ -10,13 +10,13 @@ import (
 )
 
 /*
-	GET /api/v1/weather/current
+GET /api/v1/weather/current
 
-	required:
-		q, example=warsaw,london,tokyo
-	optional:
-		limit, default=20
-		page, default=1
+required:
+	q, example=warsaw,london,tokyo
+optional:
+	limit, default=20
+	page, default=1
 */
 func CurrentWeather(conf *config.Config) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
