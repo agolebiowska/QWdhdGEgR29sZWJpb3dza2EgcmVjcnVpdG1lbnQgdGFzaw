@@ -1,5 +1,5 @@
 # Weather microservice
-[![Build Status](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw.svg?branch=master)](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw)
+[![Build Status](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw.svg?token=QSjVjvu4k42S8s1cw14C&branch=master)](https://travis-ci.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw)
 
 | Resource                 | Query params| Description|
 |:-------------------------|:------------|:-----------|
