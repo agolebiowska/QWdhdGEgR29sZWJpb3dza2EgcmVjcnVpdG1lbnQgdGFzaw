@@ -2,10 +2,10 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
+	"github.com/sirupsen/logrus"
 )
 
 func Run() {
@@ -18,11 +18,11 @@ func Run() {
 
 	if err := server.ListenAndServe(); err != nil {
 		if err == http.ErrServerClosed {
-			log.Print("Web server shutdown complete.")
+			logrus.Print("Web server shutdown complete.")
 		} else {
-			log.Fatal(fmt.Printf("The web server shut down unexpectedly: %s", err))
+			logrus.Fatal(fmt.Printf("The web server shut down unexpectedly: %s", err))
 		}
 	}
 
-	log.Print(fmt.Printf("Listening on port: %d", conf.HttpServerPort()))
+	logrus.Print(fmt.Printf("Listening on port: %d", conf.HttpServerPort()))
 }

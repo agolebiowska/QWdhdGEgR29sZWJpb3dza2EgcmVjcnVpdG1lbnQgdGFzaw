@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/internal/config"
+	"github.com/agolebiowska/QWdhdGEgR29sZWJpb3dza2EgcmVjcnVpdG1lbnQgdGFzaw/pkg/errs"
 	"github.com/patrickmn/go-cache"
 )
 
@@ -79,7 +80,7 @@ func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) erro
 		}
 	}()
 	if err != nil {
-		return err
+		return errs.ErrInvalidRequest
 	}
 
 	var body []byte

@@ -2,11 +2,11 @@ package errs
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type HTTPError struct {
@@ -51,7 +51,7 @@ func WriteError(w http.ResponseWriter, err error) {
 		err = errors.Errorf("No error specified.")
 	}
 
-	log.Print(err.Error())
+	logrus.Print(err.Error())
 	httpError, ok := err.(HTTPError)
 	if ok {
 		err = httpError
@@ -73,7 +73,6 @@ func FindError(resp *http.Response) error {
 	case http.StatusBadRequest:
 		return ErrBadRequest
 	case http.StatusUnauthorized:
-		log.Fatal(resp)
 		return ErrUnauthorized
 	case http.StatusForbidden:
 		return ErrForbidden
