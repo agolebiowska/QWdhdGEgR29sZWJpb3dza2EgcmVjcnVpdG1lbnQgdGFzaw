@@ -69,35 +69,27 @@ func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) erro
 		return err
 	}
 
-	if ctx != nil {
-		req = req.WithContext(ctx)
+	if ctx == nil {
+		ctx = context.Background()
 	}
 
-	resp, err := c.http.Do(req)
+	resp, err := c.http.Do(req.WithContext(ctx))
 	defer func() {
 		if resp != nil {
 			resp.Body.Close()
 		}
 	}()
 	if err != nil {
-		return errs.ErrInvalidRequest
+		return chooseError(ctx, errs.ErrInvalidRequest)
 	}
 
-	var body []byte
-	done := make(chan struct{})
-	go func() {
-		body, err = ioutil.ReadAll(resp.Body)
-		close(done)
-	}()
+	if err := errs.CheckResponse(resp); err != nil {
+		return err
+	}
 
-	select {
-	case <-ctx.Done():
-		<-done
-		err = resp.Body.Close()
-		if err == nil {
-			err = ctx.Err()
-		}
-	case <-done:
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return errs.ErrInvalidResponse
 	}
 
 	err = json.Unmarshal(body, &result)
@@ -108,7 +100,16 @@ func (c *Client) Do(ctx context.Context, urlStr string, result interface{}) erro
 	return nil
 }
 
-func (c *Client) MakeRange(limit, page, len int) (from, to int) {
+func chooseError(ctx context.Context, err error) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+		return err
+	}
+}
+
+func MakeRange(limit, page, len int) (from, to int) {
 	from = limit*page - limit
 	if from > len {
 		from = 0

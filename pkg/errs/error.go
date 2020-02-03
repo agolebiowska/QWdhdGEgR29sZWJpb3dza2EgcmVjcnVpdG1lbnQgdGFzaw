@@ -64,7 +64,7 @@ func WriteError(w http.ResponseWriter, err error) {
 	_ = json.NewEncoder(w).Encode(ErrInternalError)
 }
 
-func FindError(resp *http.Response) error {
+func CheckResponse(resp *http.Response) error {
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return nil

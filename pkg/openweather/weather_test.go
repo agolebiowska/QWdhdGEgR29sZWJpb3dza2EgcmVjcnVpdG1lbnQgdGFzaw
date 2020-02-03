@@ -3,6 +3,7 @@ package openweather
 import (
 	"context"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 
@@ -120,6 +121,47 @@ var wantResponse = &CurrentWeatherListResponse{
 			Cod:      u.Int(200),
 		},
 	},
-	Page:  1,
 	Count: 1,
+}
+
+func TestWeatherService_MakeFilters(t *testing.T) {
+	c, _, teardown := setup()
+	defer teardown()
+
+	tests := []struct {
+		name  string
+		query string
+		want  *Filters
+	}{
+		{
+			"Empty query",
+			"",
+			&Filters{nil, 1, 20},
+		},
+		{
+			"One name",
+			"q=warsaw",
+			&Filters{[]string{"warsaw"}, 1, 20},
+		},
+		{
+			"Multiple names",
+			"q=warsaw,london,new york,budapest",
+			&Filters{[]string{"warsaw", "london", "new york", "budapest"}, 1, 20},
+		},
+		{
+			"All filters",
+			"q=warsaw,london&page=15&limit=5",
+			&Filters{[]string{"warsaw", "london"}, 15, 5},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			q, _ := url.ParseQuery(tt.query)
+			got := c.Weather.MakeFilters(q)
+
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("got = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

@@ -16,7 +16,6 @@ type WeatherService service
 
 type CurrentWeatherListResponse struct {
 	Items []CurrentWeather `json:"items"`
-	Page  int              `json:"page"`
 	Count int              `json:"count"`
 }
 
@@ -81,7 +80,10 @@ type Sys struct {
 }
 
 func (s *WeatherService) MakeFilters(v url.Values) *Filters {
-	names := strings.Split(strings.ToLower(v.Get("q")), ",")
+	var names []string
+	if q := strings.ToLower(v.Get("q")); q != "" {
+		names = strings.Split(q, ",")
+	}
 
 	page, err := strconv.Atoi(v.Get("page"))
 	if err != nil || page <= 0 {
@@ -103,7 +105,7 @@ func (s *WeatherService) ListCurrentByNames(ctx context.Context, f *Filters) (*C
 
 	var weathers []CurrentWeather
 
-	from, to := s.client.MakeRange(f.Limit, f.Page, len(f.Names))
+	from, to := MakeRange(f.Limit, f.Page, len(f.Names))
 
 	for i, n := range f.Names[from:to] {
 		if i > f.Limit-1 {
@@ -126,5 +128,5 @@ func (s *WeatherService) ListCurrentByNames(ctx context.Context, f *Filters) (*C
 		weathers = append(weathers, *weather)
 	}
 
-	return &CurrentWeatherListResponse{weathers, f.Page, len(weathers)}, nil
+	return &CurrentWeatherListResponse{weathers, len(weathers)}, nil
 }
