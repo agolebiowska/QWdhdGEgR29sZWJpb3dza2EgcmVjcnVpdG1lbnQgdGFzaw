@@ -8,8 +8,9 @@ import (
 func GetTestConfig() *Config {
 	params := &Params{
 		HttpServerPort:        8080,
+		ApiKey:                "secret",
 		OpenWeatherApiKey:     "xxx",
-		OpenWeatherApiBaseUrl: "",
+		OpenWeatherApiBaseUrl: "api.url",
 		CacheExpiration:       1,
 		CacheInterval:         2,
 	}
